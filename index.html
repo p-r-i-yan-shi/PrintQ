@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PrintQ — Print via WhatsApp & Email. Instantly.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#25D366;--gd:#128C7E;
+  --b:#2563eb;--bd:#1d4ed8;--bl:#dbeafe;--bll:#eff6ff;
+  --ink:#0a0a0a;--ink2:#0f172a;
+  --cream:#fafaf7;--offwhite:#f4f4f0;
+  --muted:#64748b;--border:rgba(0,0,0,0.08);
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'Bricolage Grotesque',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+
+/* ── CURSOR (desktop only) ── */
+@media(pointer:fine){
+  #cursor{position:fixed;width:12px;height:12px;background:var(--b);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width 0.3s,height 0.3s;mix-blend-mode:multiply}
+  #cursor.big{width:52px;height:52px;background:rgba(37,99,235,0.1)}
+}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 5vw;height:68px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid transparent;transition:all 0.4s}
+nav.solid{background:rgba(250,250,247,0.95);backdrop-filter:blur(20px);border-color:var(--border);box-shadow:0 2px 20px rgba(0,0,0,0.06)}
+.nav-logo{font-size:1.3rem;font-weight:800;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-sq{width:34px;height:34px;background:var(--b);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-sq svg{width:18px;height:18px;fill:white}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:0.88rem;font-weight:500;transition:color 0.2s;white-space:nowrap}
+.nav-links a:hover{color:var(--ink)}
+.nav-pill{background:var(--b);color:white;border-radius:100px;padding:10px 22px;font-size:0.85rem;font-weight:700;cursor:pointer;border:none;font-family:'Bricolage Grotesque',sans-serif;transition:all 0.2s;white-space:nowrap;flex-shrink:0}
+.nav-pill:hover{background:var(--bd);transform:scale(1.04)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none}
+.hamburger span{width:22px;height:2px;background:var(--ink);border-radius:2px;transition:all 0.3s;display:block}
+.mobile-menu{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(250,250,247,0.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:20px 5vw 28px;flex-direction:column;gap:16px;z-index:199}
+.mobile-menu.open{display:flex}
+.mobile-menu a{text-decoration:none;color:var(--ink);font-size:1rem;font-weight:500;padding:8px 0;border-bottom:1px solid var(--border)}
+.mobile-menu .nav-pill{width:100%;text-align:center;border-radius:12px;padding:14px}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hamburger{display:flex}
+}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 5vw 80px;position:relative;overflow:hidden;background:var(--ink2)}
+.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:56px 56px;animation:gridShift 22s linear infinite}
+@keyframes gridShift{from{background-position:0 0}to{background-position:56px 56px}}
+.glow-orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orbPulse 7s ease-in-out infinite;pointer-events:none}
+.orb1{width:500px;height:500px;background:rgba(37,99,235,0.14);top:-150px;right:-80px}
+.orb2{width:360px;height:360px;background:rgba(37,99,235,0.08);bottom:-80px;left:8%;animation-delay:-3.5s}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.35);border-radius:100px;padding:7px 16px;color:#93c5fd;font-size:0.8rem;font-weight:600;letter-spacing:0.04em;margin-bottom:28px;animation:fadeUp 0.8s ease both}
+.tag-dot{width:6px;height:6px;background:#60a5fa;border-radius:50%;animation:blink 1.4s infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+.hero h1{font-size:clamp(2.4rem,6vw,6rem);font-weight:800;line-height:1.0;color:white;text-align:center;margin-bottom:24px;max-width:860px;animation:fadeUp 0.8s 0.1s ease both}
+.hero h1 .wa{color:var(--g)}
+.hero h1 .em{color:#60a5fa}
+.hero h1 .thin{font-weight:300;font-style:italic;opacity:0.65}
+.hero-sub{font-size:1rem;color:rgba(255,255,255,0.5);text-align:center;max-width:540px;line-height:1.8;margin-bottom:16px;font-weight:300;animation:fadeUp 0.8s 0.2s ease both}
+.hero-usp{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 18px;color:rgba(255,255,255,0.75);font-size:0.85rem;font-weight:500;margin-bottom:36px;animation:fadeUp 0.8s 0.25s ease both}
+.usp-icon{font-size:1rem}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.8s 0.3s ease both}
+.btn-go{background:var(--b);color:white;border:none;border-radius:13px;padding:15px 30px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:9px}
+.btn-go:hover{background:var(--bd);transform:translateY(-3px);box-shadow:0 14px 36px rgba(37,99,235,0.45)}
+.btn-ghost{background:transparent;color:white;border:1px solid rgba(255,255,255,0.2);border-radius:13px;padding:15px 28px;font-size:0.95rem;font-weight:400;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;transition:all 0.25s}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.5);background:rgba(255,255,255,0.06)}
+.scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;color:rgba(255,255,255,0.25);font-size:0.7rem;letter-spacing:0.12em;animation:fadeUp 1s 1.2s ease both}
+.scroll-line{width:1px;height:36px;background:linear-gradient(to bottom,transparent,rgba(255,255,255,0.25));animation:scrollDown 2s ease-in-out infinite}
+@keyframes scrollDown{0%,100%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}}
+@keyframes orbPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+
+/* Channel badges in hero */
+.channel-badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:32px;animation:fadeUp 0.8s 0.22s ease both}
+.ch-badge{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:7px 14px;font-size:0.8rem;font-weight:600;color:white}
+.ch-wa{border-color:rgba(37,211,102,0.4);background:rgba(37,211,102,0.1);color:#86efac}
+.ch-em{border-color:rgba(96,165,250,0.4);background:rgba(37,99,235,0.12);color:#93c5fd}
+.ch-dot-wa{width:7px;height:7px;border-radius:50%;background:var(--g);flex-shrink:0}
+.ch-dot-em{width:7px;height:7px;border-radius:50%;background:#60a5fa;flex-shrink:0}
+
+/* ── MARQUEE ── */
+.marquee-wrap{background:var(--b);padding:14px 0;overflow:hidden;white-space:nowrap}
+.marquee-track{display:inline-flex;animation:marquee 22s linear infinite}
+.marquee-item{display:inline-flex;align-items:center;gap:14px;padding:0 24px;font-family:'Space Mono',monospace;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.85);letter-spacing:0.02em}
+.marquee-dot{width:4px;height:4px;background:rgba(255,255,255,0.3);border-radius:50%;flex-shrink:0}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── SECTION BASE ── */
+.sec{padding:90px 5vw}
+.sec-inner{max-width:1160px;margin:0 auto}
+.chip{display:inline-block;background:var(--bl);color:#1d4ed8;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 13px;border-radius:100px;margin-bottom:16px}
+.chip-g{background:#dcfce7;color:#166534}
+.sec-h{font-size:clamp(1.9rem,3.8vw,3.2rem);font-weight:800;line-height:1.1;color:var(--ink);margin-bottom:14px}
+.sec-p{font-size:1rem;color:var(--muted);line-height:1.8;max-width:500px;font-weight:300}
+.r{opacity:0;transform:translateY(26px);transition:opacity 0.6s ease,transform 0.6s ease}
+.r.in{opacity:1;transform:none}
+.r.d1{transition-delay:0.1s}.r.d2{transition-delay:0.2s}.r.d3{transition-delay:0.3s}
+
+/* ── USP BANNER ── */
+.usp-banner{background:linear-gradient(135deg,var(--ink2),#1e3a8a);padding:60px 5vw}
+.usp-inner{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;border-radius:20px;overflow:hidden}
+.usp-card{background:rgba(255,255,255,0.04);padding:32px 28px;border:1px solid rgba(255,255,255,0.07)}
+.usp-card:first-child{border-radius:20px 0 0 20px}
+.usp-card:last-child{border-radius:0 20px 20px 0}
+.usp-ic{font-size:1.8rem;margin-bottom:14px}
+.usp-h{font-family:'Space Mono',monospace;font-size:0.75rem;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px}
+.usp-val{font-size:1.35rem;font-weight:800;color:white;margin-bottom:6px;line-height:1.2}
+.usp-sub{font-size:0.83rem;color:rgba(255,255,255,0.45);font-weight:300;line-height:1.5}
+.usp-card.highlight{background:rgba(37,99,235,0.2);border-color:rgba(96,165,250,0.3)}
+.usp-card.highlight .usp-val{color:#93c5fd}
+@media(max-width:768px){
+  .usp-inner{grid-template-columns:1fr}
+  .usp-card:first-child{border-radius:20px 20px 0 0}
+  .usp-card:last-child{border-radius:0 0 20px 20px}
+}
+
+/* ── CHANNELS SECTION ── */
+.channels-sec{background:var(--offwhite)}
+.channels-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:52px}
+.ch-card{background:white;border-radius:24px;padding:36px;border:2px solid var(--border);transition:all 0.3s;position:relative;overflow:hidden}
+.ch-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.3s}
+.ch-card.wa-card::before{background:linear-gradient(135deg,rgba(37,211,102,0.04),transparent)}
+.ch-card.em-card::before{background:linear-gradient(135deg,rgba(37,99,235,0.04),transparent)}
+.ch-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.08)}
+.ch-card.wa-card:hover{border-color:rgba(37,211,102,0.4)}
+.ch-card.em-card:hover{border-color:rgba(37,99,235,0.3)}
+.ch-card:hover::before{opacity:1}
+.ch-header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.ch-logo{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;transition:transform 0.3s}
+.ch-card:hover .ch-logo{transform:scale(1.1) rotate(-4deg)}
+.wa-logo{background:#dcfce7}
+.em-logo{background:#dbeafe}
+.ch-name{font-size:1.2rem;font-weight:800;color:var(--ink)}
+.ch-tag{font-size:0.75rem;color:var(--muted);font-weight:400}
+.ch-desc{font-size:0.88rem;color:var(--muted);line-height:1.65;font-weight:300;margin-bottom:20px}
+.ch-points{list-style:none;display:flex;flex-direction:column;gap:8px}
+.ch-points li{display:flex;align-items:flex-start;gap:9px;font-size:0.85rem;color:var(--ink);line-height:1.4}
+.ch-points li::before{content:'→';font-weight:700;flex-shrink:0;margin-top:1px}
+.wa-card .ch-points li::before{color:var(--g)}
+.em-card .ch-points li::before{color:var(--b)}
+.ch-badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.ch-pill{padding:5px 12px;border-radius:100px;font-size:0.73rem;font-weight:700}
+.wa-pill{background:#dcfce7;color:#166534}
+.em-pill{background:#dbeafe;color:#1d4ed8}
+@media(max-width:768px){.channels-grid{grid-template-columns:1fr}}
+
+/* ── HOW IT WORKS ── */
+.how-sec{background:var(--cream)}
+.how-layout{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;margin-top:60px}
+.steps{display:flex;flex-direction:column}
+.step{display:flex;gap:18px;padding:24px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all 0.3s;position:relative}
+.step:last-child{border:none}
+.step.active{padding-left:14px}
+.step.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--b);border-radius:2px}
+.step-num{font-family:'Space Mono',monospace;font-size:0.72rem;font-weight:700;color:var(--muted);padding-top:3px;min-width:26px;transition:color 0.3s;flex-shrink:0}
+.step.active .step-num{color:var(--b)}
+.step-title{font-size:1rem;font-weight:700;margin-bottom:6px;color:var(--ink);transition:color 0.3s}
+.step.active .step-title{color:var(--b)}
+.step-desc{font-size:0.85rem;color:var(--muted);line-height:1.6;font-weight:300;max-height:0;overflow:hidden;transition:max-height 0.4s ease}
+.step.active .step-desc{max-height:120px}
+.phone-demo{position:relative;display:flex;justify-content:center;align-items:center}
+.phone{width:268px;background:#0d0d0d;border-radius:42px;padding:11px;border:2px solid #222;box-shadow:0 50px 100px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(255,255,255,0.04);flex-shrink:0}
+.p-notch{width:64px;height:18px;background:#0d0d0d;border-radius:0 0 14px 14px;margin:0 auto 7px}
+.p-screen{background:#ECE5DD;border-radius:30px;overflow:hidden;min-height:460px}
+.p-topbar{background:#075E54;padding:11px 13px;display:flex;align-items:center;gap:9px}
+.p-av{width:34px;height:34px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;color:white;flex-shrink:0}
+.p-name{color:white;font-weight:700;font-size:0.8rem}
+.p-online{color:rgba(255,255,255,0.65);font-size:0.67rem}
+.p-body{padding:10px 9px;display:flex;flex-direction:column;gap:6px;min-height:390px}
+.bbl{padding:7px 11px;border-radius:11px;font-size:0.73rem;line-height:1.45;max-width:80%;opacity:0;transform:translateY(5px);animation:popIn 0.35s ease forwards}
+.bbl-in{background:white;border-radius:0 11px 11px 11px;align-self:flex-start}
+.bbl-out{background:#DCF8C6;border-radius:11px 0 11px 11px;align-self:flex-end}
+.bbl-file{background:white;border-radius:0 11px 11px 11px;align-self:flex-start;padding:7px 9px;display:flex;align-items:center;gap:7px;max-width:85%}
+.file-thumb{width:30px;height:30px;background:#E53935;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.55rem;font-weight:700;flex-shrink:0}
+.file-thumb.img{background:#1565C0}
+.fn{font-size:0.67rem;font-weight:600;color:#0a0a0a}
+.fs{font-size:0.6rem;color:#6b7280}
+.ts2{font-size:0.59rem;color:#6b7280;text-align:right;margin-top:2px}
+.sys-msg{align-self:center;background:rgba(0,0,0,0.06);border-radius:8px;padding:4px 10px;font-size:0.62rem;color:#555;margin:2px 0}
+@keyframes popIn{to{opacity:1;transform:none}}
+.bbl:nth-child(1){animation-delay:0.8s}.bbl:nth-child(2){animation-delay:1.6s}.bbl:nth-child(3){animation-delay:2.4s}.bbl:nth-child(4){animation-delay:3.2s}.bbl:nth-child(5){animation-delay:4.0s}.bbl:nth-child(6){animation-delay:4.8s}.bbl:nth-child(7){animation-delay:5.6s}
+.fc{position:absolute;background:white;border-radius:14px;padding:10px 14px;box-shadow:0 10px 32px rgba(0,0,0,0.1);display:flex;align-items:center;gap:9px;animation:floatY 3.5s ease-in-out infinite;border:1px solid rgba(0,0,0,0.05)}
+.fc1{top:40px;right:-52px;animation-delay:0s}
+.fc2{bottom:100px;left:-60px;animation-delay:-1.8s}
+.fc-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
+.fc-bl-bg{background:#dbeafe}.fc-gr-bg{background:#dcfce7}
+.fc-th{font-size:0.76rem;font-weight:700;color:var(--ink)}
+.fc-st{font-size:0.67rem;color:var(--muted)}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media(max-width:768px){
+  .how-layout{grid-template-columns:1fr}
+  .phone-demo{margin-top:32px}
+  .fc1,.fc2{display:none}
+}
+
+/* ── AUTO DOWNLOAD SPOTLIGHT ── */
+.dl-sec{background:var(--ink2);overflow:hidden;position:relative}
+.dl-sec::before{content:'';position:absolute;top:-120px;left:-120px;width:400px;height:400px;background:radial-gradient(circle,rgba(37,99,235,0.18) 0%,transparent 70%);pointer-events:none}
+.dl-sec::after{content:'';position:absolute;bottom:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(37,99,235,0.1) 0%,transparent 70%);pointer-events:none}
+.dl-sec .chip{background:rgba(37,99,235,0.2);color:#93c5fd}
+.dl-sec .sec-h{color:white}
+.dl-sec .sec-p{color:rgba(255,255,255,0.45)}
+.dl-layout{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:52px}
+.dl-visual{background:rgba(255,255,255,0.04);border-radius:20px;padding:28px;border:1px solid rgba(255,255,255,0.08)}
+.dl-steps-list{display:flex;flex-direction:column;gap:0}
+.dl-step{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid rgba(255,255,255,0.06);align-items:flex-start}
+.dl-step:last-child{border:none}
+.dl-step-ic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:rgba(37,99,235,0.2)}
+.dl-step-h{font-size:0.9rem;font-weight:700;color:white;margin-bottom:4px}
+.dl-step-p{font-size:0.8rem;color:rgba(255,255,255,0.45);line-height:1.5;font-weight:300}
+.dl-highlight-box{background:rgba(37,99,235,0.15);border:1px solid rgba(96,165,250,0.3);border-radius:16px;padding:22px;margin-top:20px}
+.dl-hl-label{font-size:0.72rem;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
+.dl-hl-text{font-size:1rem;font-weight:700;color:white;line-height:1.4}
+.dl-hl-sub{font-size:0.83rem;color:rgba(255,255,255,0.45);margin-top:6px;font-weight:300}
+.dl-right-points{display:flex;flex-direction:column;gap:16px;margin-top:8px}
+.dlrp{display:flex;gap:14px;align-items:flex-start}
+.dlrp-ic{width:44px;height:44px;border-radius:14px;background:rgba(37,99,235,0.18);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.dlrp-h{font-size:0.93rem;font-weight:700;color:white;margin-bottom:4px}
+.dlrp-p{font-size:0.82rem;color:rgba(255,255,255,0.45);line-height:1.5;font-weight:300}
+@media(max-width:768px){.dl-layout{grid-template-columns:1fr}}
+
+/* ── DASHBOARD ── */
+.dash-sec{background:var(--offwhite)}
+.dash-sec .chip{background:var(--bl);color:#1d4ed8}
+.dash-window{background:#111827;border-radius:18px;border:1px solid rgba(255,255,255,0.06);overflow:hidden;box-shadow:0 32px 64px rgba(0,0,0,0.4);margin-top:52px}
+.dw-bar{background:#0d1117;padding:13px 18px;display:flex;align-items:center;gap:7px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.dd{width:10px;height:10px;border-radius:50%}
+.dd-r{background:#ff5f57}.dd-y{background:#ffbd2e}.dd-g{background:#28c840}
+.dw-label{margin:0 auto;color:rgba(255,255,255,0.28);font-size:0.75rem}
+.dw-body{display:grid;grid-template-columns:190px 1fr}
+.dw-side{background:#0d1117;padding:16px 10px;border-right:1px solid rgba(255,255,255,0.05)}
+.dsi{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;color:rgba(255,255,255,0.38);font-size:0.78rem;margin-bottom:2px;cursor:pointer;transition:all 0.2s}
+.dsi.on,.dsi:hover{background:rgba(37,99,235,0.15);color:#93c5fd}
+.dw-main{padding:16px 18px}
+.dw-mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.dw-t2{color:white;font-weight:700;font-size:0.88rem}
+.dw-tabs{display:flex;gap:4px}
+.dw-tab{padding:5px 10px;border-radius:7px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.2s;border:none}
+.dw-tab.on{background:rgba(37,99,235,0.25);color:#93c5fd}
+.dw-tab.off{background:transparent;color:rgba(255,255,255,0.3)}
+.live-badge{background:rgba(37,99,235,0.2);color:#93c5fd;font-size:0.7rem;font-weight:700;padding:4px 9px;border-radius:100px;display:flex;align-items:center;gap:4px}
+.lb-dot{width:5px;height:5px;background:#60a5fa;border-radius:50%;animation:blink 1.4s infinite;flex-shrink:0}
+.order-rows{display:flex;flex-direction:column;gap:7px}
+.or{background:rgba(255,255,255,0.03);border-radius:11px;padding:10px 13px;display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,0.05);transition:background 0.2s;flex-wrap:nowrap}
+.or:hover{background:rgba(255,255,255,0.06)}
+.or-av{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:white;flex-shrink:0}
+.or-info{flex:1;min-width:0}
+.or-name{color:white;font-size:0.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.or-file{color:rgba(255,255,255,0.32);font-size:0.67rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.or-src{font-size:0.62rem;padding:2px 7px;border-radius:100px;font-weight:700;flex-shrink:0}
+.src-wa{background:rgba(37,211,102,0.15);color:#86efac}
+.src-em{background:rgba(37,99,235,0.2);color:#93c5fd}
+.or-time{color:rgba(255,255,255,0.22);font-size:0.65rem;flex-shrink:0}
+.print-btn{background:var(--b);color:white;border:none;border-radius:7px;padding:5px 11px;font-size:0.7rem;font-weight:700;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;transition:all 0.2s;flex-shrink:0}
+.print-btn:hover{background:var(--bd);transform:scale(1.06)}
+.sd{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sd-b{background:#60a5fa;animation:blink 1.4s infinite}
+.sd-y{background:#f59e0b}
+.sd-g{background:#34d399}
+@media(max-width:768px){
+  .dw-body{grid-template-columns:1fr}
+  .dw-side{display:none}
+  .or{flex-wrap:wrap}
+}
+
+/* ── FEATURES ── */
+.feat-sec{background:var(--cream)}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px}
+.feat-card{background:white;border-radius:22px;padding:28px 24px;border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.3s}
+.feat-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(37,99,235,0.04),transparent);opacity:0;transition:opacity 0.3s}
+.feat-card:hover{transform:translateY(-5px);box-shadow:0 20px 48px rgba(0,0,0,0.08);border-color:rgba(37,99,235,0.25)}
+.feat-card:hover::after{opacity:1}
+.feat-ic{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:18px;transition:transform 0.3s;flex-shrink:0}
+.feat-card:hover .feat-ic{transform:scale(1.1) rotate(-4deg)}
+.fi-bl{background:#dbeafe}.fi-gr{background:#dcfce7}.fi-am{background:#fef3c7}.fi-pu{background:#ede9fe}.fi-pk{background:#fce7f3}.fi-te{background:#ccfbf1}
+.feat-h{font-size:0.95rem;font-weight:700;margin-bottom:8px;color:var(--ink)}
+.feat-p{font-size:0.83rem;color:var(--muted);line-height:1.6;font-weight:300}
+.feat-num{position:absolute;top:16px;right:18px;font-family:'Space Mono',monospace;font-size:4rem;font-weight:700;color:rgba(0,0,0,0.025);line-height:1}
+@media(max-width:900px){.feat-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.feat-grid{grid-template-columns:1fr}}
+
+/* ── PRICING ── */
+.price-sec{background:var(--offwhite)}
+.price-wrap{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;margin-top:56px}
+.price-card{background:var(--ink2);border-radius:26px;padding:40px;position:relative;overflow:hidden}
+.price-card::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(37,99,235,0.25) 0%,transparent 70%)}
+.price-tag-label{font-size:0.78rem;font-weight:700;color:#60a5fa;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px}
+.price-per-day{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
+.price-num{font-family:'Space Mono',monospace;font-size:3rem;font-weight:700;color:white;line-height:1}
+.price-slash{font-size:1.1rem;color:rgba(255,255,255,0.35)}
+.price-sub{font-size:0.83rem;color:rgba(255,255,255,0.3);margin-bottom:28px}
+.price-list{list-style:none;margin-bottom:32px}
+.price-list li{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.85rem;color:rgba(255,255,255,0.65);display:flex;gap:9px;font-weight:300;line-height:1.4}
+.price-list li::before{content:'✓';color:#60a5fa;font-weight:700;flex-shrink:0}
+.price-cta{width:100%;background:var(--b);color:white;border:none;border-radius:13px;padding:15px;font-size:0.93rem;font-weight:700;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;transition:all 0.2s}
+.price-cta:hover{background:var(--bd);transform:translateY(-2px);box-shadow:0 10px 28px rgba(37,99,235,0.4)}
+.why-list{display:flex;flex-direction:column}
+.why-item{display:flex;gap:15px;padding:22px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.why-item:last-child{border:none}
+.why-ic{width:42px;height:42px;border-radius:13px;background:var(--bl);display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+.why-h{font-size:0.9rem;font-weight:700;margin-bottom:4px;color:var(--ink)}
+.why-p{font-size:0.82rem;color:var(--muted);line-height:1.55;font-weight:300}
+@media(max-width:768px){.price-wrap{grid-template-columns:1fr}}
+
+/* ── TESTIMONIALS ── */
+.testi-sec{background:var(--ink2)}
+.testi-sec .chip{background:rgba(37,99,235,0.18);color:#93c5fd}
+.testi-sec .sec-h{color:white}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+.tc{background:rgba(255,255,255,0.04);border-radius:20px;padding:24px;border:1px solid rgba(255,255,255,0.07);transition:all 0.3s}
+.tc:hover{background:rgba(255,255,255,0.07);transform:translateY(-4px)}
+.tc-stars{color:#f59e0b;font-size:0.83rem;letter-spacing:2px;margin-bottom:14px}
+.tc-text{font-size:0.85rem;color:rgba(255,255,255,0.58);line-height:1.7;margin-bottom:18px;font-weight:300;font-style:italic}
+.tc-auth{display:flex;align-items:center;gap:11px}
+.tc-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;color:white;flex-shrink:0}
+.tc-n{font-weight:600;font-size:0.83rem;color:white}
+.tc-s{font-size:0.72rem;color:rgba(255,255,255,0.32)}
+@media(max-width:768px){.testi-grid{grid-template-columns:1fr}}
+
+/* ── CONTACT ── */
+.contact-sec{background:var(--cream);position:relative;overflow:hidden}
+.contact-sec::before{content:'';position:absolute;top:-160px;right:-160px;width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,0.05) 0%,transparent 70%);pointer-events:none}
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;margin-top:56px}
+.contact-form-wrap{background:white;border-radius:24px;padding:36px;border:1px solid var(--border);box-shadow:0 6px 32px rgba(0,0,0,0.05)}
+.cf-title{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:24px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:0.75rem;font-weight:700;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px}
+.fg input{width:100%;background:var(--offwhite);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;font-size:0.9rem;color:var(--ink);outline:none;transition:all 0.2s;font-family:'Bricolage Grotesque',sans-serif}
+.fg input:focus{border-color:var(--b);background:white;box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+.fg input::placeholder{color:#c0bdb4}
+.submit-btn{width:100%;background:var(--b);color:white;border:none;border-radius:12px;padding:15px;font-size:0.93rem;font-weight:700;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;transition:all 0.25s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.submit-btn:hover{background:var(--bd);transform:translateY(-2px);box-shadow:0 10px 28px rgba(37,99,235,0.35)}
+.submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
+.success-box{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:16px;text-align:center;color:#1d4ed8;font-weight:600;display:none;margin-top:14px;font-size:0.88rem}
+.contact-right{padding-top:4px}
+.big-claim{font-size:1.8rem;font-weight:800;color:var(--ink);line-height:1.2;margin-bottom:20px}
+.big-claim span{color:var(--b)}
+.contact-items{display:flex;flex-direction:column}
+.ci{display:flex;align-items:center;gap:14px;padding:17px 0;border-bottom:1px solid var(--border)}
+.ci:last-child{border:none}
+.ci-ic{width:42px;height:42px;border-radius:13px;background:var(--bl);display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0}
+.ci-l{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:1px}
+.ci-v{font-size:0.88rem;font-weight:600;color:var(--ink)}
+.ci-v a{color:var(--b);text-decoration:none}
+.trust-bar{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}
+.tb{background:white;border:1px solid var(--border);border-radius:100px;padding:7px 13px;font-size:0.77rem;color:var(--muted);display:flex;align-items:center;gap:5px}
+.tb b{color:var(--b)}
+@media(max-width:768px){.contact-layout{grid-template-columns:1fr}}
+
+/* ── FOOTER ── */
+footer{background:#0f172a;padding:48px 5vw 28px}
+.foot-inner{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:36px}
+.foot-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.foot-logo-img{width:36px;height:36px;border-radius:9px;background:var(--b);display:flex;align-items:center;justify-content:center}
+.foot-logo-img svg{width:20px;height:20px;fill:white}
+.foot-brand-name{font-size:1.15rem;font-weight:800;color:white}
+.foot-sub{color:rgba(255,255,255,0.38);font-size:0.82rem;line-height:1.6;font-weight:300;max-width:240px;margin-bottom:16px}
+.foot-powered{display:flex;align-items:center;gap:8px}
+.fp-logo{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.fp-logo img{width:100%;height:100%;object-fit:cover}
+.fp-text{font-size:0.72rem;color:rgba(255,255,255,0.3)}
+.fp-name{font-size:0.8rem;color:rgba(255,255,255,0.55);font-weight:600}
+.foot-col-h{color:white;font-size:0.82rem;font-weight:700;margin-bottom:14px;letter-spacing:0.02em}
+.foot-col a{display:block;color:rgba(255,255,255,0.42);text-decoration:none;font-size:0.8rem;margin-bottom:9px;transition:color 0.2s;font-weight:300}
+.foot-col a:hover{color:white}
+.foot-bottom{max-width:1160px;margin:28px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.foot-copy{color:rgba(255,255,255,0.28);font-size:0.77rem;font-weight:300}
+.foot-legal a{color:rgba(255,255,255,0.28);text-decoration:none;font-size:0.77rem;margin-left:18px;transition:color 0.2s}
+.foot-legal a:hover{color:rgba(255,255,255,0.6)}
+@media(max-width:768px){
+  .foot-inner{grid-template-columns:1fr 1fr}
+  .foot-bottom{flex-direction:column;align-items:flex-start}
+  .sec{padding:70px 5vw}
+  .contact-layout{grid-template-columns:1fr}
+  .contact-form-wrap{padding:24px 18px}
+  .fg input{padding:14px 14px;font-size:1rem;border-radius:12px}
+  .submit-btn{padding:16px;font-size:1rem;border-radius:14px}
+  .big-claim{font-size:1.4rem;margin-top:8px}
+  .price-card{padding:28px 22px}
+  .price-num{font-size:2.4rem}
+  .hero-btns{flex-direction:column;width:100%;max-width:340px}
+  .btn-go,.btn-ghost{width:100%;justify-content:center;padding:16px 20px}
+  .hero-sub{font-size:0.92rem}
+  .hero-usp{font-size:0.8rem;text-align:center;line-height:1.5}
+  .cf-title{font-size:1rem}
+  .ci{padding:14px 0}
+  .ci-ic{width:36px;height:36px;font-size:0.85rem}
+  .trust-bar{justify-content:center}
+  nav{padding:0 4vw;height:60px}
+  .mobile-menu{top:60px;padding:16px 4vw 24px}
+}
+@media(max-width:480px){
+  .foot-inner{grid-template-columns:1fr}
+  .hero h1{font-size:2rem}
+  .channel-badges{gap:8px}
+  .sec-h{font-size:1.6rem}
+  .sec{padding:56px 5vw}
+  .contact-form-wrap{padding:20px 14px}
+  .usp-inner{gap:0}
+  .hero-tag{font-size:0.72rem;padding:6px 12px}
+  .price-wrap{gap:32px}
+  .feat-card{padding:22px 18px}
+  .testi-grid{gap:12px}
+  .tc{padding:20px 18px}
+  .dl-layout{gap:32px}
+  .or{padding:8px 10px;gap:8px}
+  .or-name{font-size:0.75rem}
+  .or-file{font-size:0.62rem}
+  .print-btn{padding:4px 8px;font-size:0.65rem}
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <div class="logo-sq"><svg viewBox="0 0 24 24"><path d="M5 4h14a1 1 0 0 1 1 1v5H4V5a1 1 0 0 1 1-1zM4 12h16v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7zm6 2v2h4v-2h-4z"/></svg></div>
+    PrintQ
+  </a>
+  <div class="nav-links">
+    <a href="#channels">How it works</a>
+    <a href="#auto-dl">Auto Download</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <button class="nav-pill" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get Early Access</button>
+  </div>
+  <button class="hamburger" id="ham" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mmenu">
+  <a href="#channels" onclick="closeMenu()">How it works</a>
+  <a href="#auto-dl" onclick="closeMenu()">Auto Download</a>
+  <a href="#features" onclick="closeMenu()">Features</a>
+  <a href="#pricing" onclick="closeMenu()">Pricing</a>
+  <button class="nav-pill" onclick="closeMenu();document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get Early Access — Free</button>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="grid-lines"></div>
+    <div class="glow-orb orb1"></div>
+    <div class="glow-orb orb2"></div>
+  </div>
+  <div class="hero-tag"><span class="tag-dot"></span> Live in Punjab & Haryana · By Humble Solutions</div>
+  <h1>Print via <span class="wa">WhatsApp</span><br>or <span class="em">Email.</span><br><span class="thin">Files auto-download. One click prints.</span></h1>
+  <div class="channel-badges">
+    <div class="ch-badge ch-wa"><span class="ch-dot-wa"></span> WhatsApp</div>
+    <div class="ch-badge ch-em"><span class="ch-dot-em"></span> Email</div>
+    <div class="ch-badge" style="color:rgba(255,255,255,0.55)">→ One Unified Dashboard</div>
+  </div>
+  <p class="hero-sub">Customers send files on WhatsApp or Email. PrintQ auto-downloads everything, organises by customer, and queues them for one-click printing — zero manual work.</p>
+  <div class="hero-usp">
+    <span class="usp-icon">⚡</span>
+    Our #1 feature: Files auto-download the moment they arrive. No clicking. No waiting.
+  </div>
+  <div class="hero-btns">
+    <button class="btn-go" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      Get Early Access — Free Setup
+    </button>
+    <button class="btn-ghost" onclick="document.getElementById('channels').scrollIntoView({behavior:'smooth'})">See how it works ↓</button>
+  </div>
+  <div class="scroll-hint"><span>SCROLL</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-item">AUTO FILE DOWNLOAD<span class="marquee-dot"></span></span>
+    <span class="marquee-item">WHATSAPP + EMAIL<span class="marquee-dot"></span></span>
+    <span class="marquee-item">ONE UNIFIED DASHBOARD<span class="marquee-dot"></span></span>
+    <span class="marquee-item">SINGLE CLICK TO PRINT<span class="marquee-dot"></span></span>
+    <span class="marquee-item">ALL PRINTERS SUPPORTED<span class="marquee-dot"></span></span>
+    <span class="marquee-item">ZERO MANUAL SORTING<span class="marquee-dot"></span></span>
+    <span class="marquee-item">₹25 PER DAY<span class="marquee-dot"></span></span>
+    <span class="marquee-item">PDF · IMG · DOCX<span class="marquee-dot"></span></span>
+    <span class="marquee-item">AUTO FILE DOWNLOAD<span class="marquee-dot"></span></span>
+    <span class="marquee-item">WHATSAPP + EMAIL<span class="marquee-dot"></span></span>
+    <span class="marquee-item">ONE UNIFIED DASHBOARD<span class="marquee-dot"></span></span>
+    <span class="marquee-item">SINGLE CLICK TO PRINT<span class="marquee-dot"></span></span>
+    <span class="marquee-item">ALL PRINTERS SUPPORTED<span class="marquee-dot"></span></span>
+    <span class="marquee-item">ZERO MANUAL SORTING<span class="marquee-dot"></span></span>
+    <span class="marquee-item">₹25 PER DAY<span class="marquee-dot"></span></span>
+    <span class="marquee-item">PDF · IMG · DOCX<span class="marquee-dot"></span></span>
+  </div>
+</div>
+
+<!-- USP BANNER -->
+<div class="usp-banner">
+  <div class="usp-inner">
+    <div class="usp-card highlight r">
+      <div class="usp-ic">⚡</div>
+      <div class="usp-h">Our #1 USP</div>
+      <div class="usp-val">Auto File Download</div>
+      <div class="usp-sub">Files from WhatsApp & Email are automatically saved the moment they arrive. Zero manual downloading ever.</div>
+    </div>
+    <div class="usp-card r d1">
+      <div class="usp-ic">🖨</div>
+      <div class="usp-h">Print workflow</div>
+      <div class="usp-val">Single Click to Print</div>
+      <div class="usp-sub">One button per file. Click → prints. Works with every printer brand — no driver headaches.</div>
+    </div>
+    <div class="usp-card r d2">
+      <div class="usp-ic">💰</div>
+      <div class="usp-h">Pricing</div>
+      <div class="usp-val">₹25 / day</div>
+      <div class="usp-sub">That's less than a cup of chai. Unlimited orders, both channels, full dashboard included.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHANNELS -->
+<section class="sec channels-sec" id="channels">
+  <div class="sec-inner">
+    <div class="r"><span class="chip">Two channels. One dashboard.</span></div>
+    <div class="r d1"><h2 class="sec-h">WhatsApp & Email —<br>both in one place.</h2></div>
+    <div class="r d2"><p class="sec-p">Customers can send files however they prefer. Every order lands in the same smart dashboard, auto-organised and ready to print.</p></div>
+    <div class="channels-grid">
+      <div class="ch-card wa-card r">
+        <div class="ch-header">
+          <div class="ch-logo wa-logo">💬</div>
+          <div>
+            <div class="ch-name">WhatsApp</div>
+            <div class="ch-tag">via Meta Business API</div>
+          </div>
+        </div>
+        <p class="ch-desc">The app already on every customer's phone. No sign-up, no new app, no friction. They just send files to your shop's WhatsApp number and it's done.</p>
+        <ul class="ch-points">
+          <li>PDF, JPG, PNG, DOCX — any file type accepted</li>
+          <li>Files auto-download the moment they arrive</li>
+          <li>Customer auto-tagged by phone number</li>
+          <li>Instant notification on your dashboard</li>
+        </ul>
+        <div class="ch-badge-row">
+          <span class="ch-pill wa-pill">Zero friction for customers</span>
+          <span class="ch-pill wa-pill">Auto-download ⚡</span>
+        </div>
+      </div>
+      <div class="ch-card em-card r d1">
+        <div class="ch-header">
+          <div class="ch-logo em-logo">📧</div>
+          <div>
+            <div class="ch-name">Email</div>
+            <div class="ch-tag">Any email client works</div>
+          </div>
+        </div>
+        <p class="ch-desc">Perfect for offices, colleges, and businesses. Customers email attachments to your shop's print email address and files appear instantly on your dashboard.</p>
+        <ul class="ch-points">
+          <li>Attachments auto-downloaded from every email</li>
+          <li>Multiple files in one email — all handled</li>
+          <li>Sender email used to identify customer</li>
+          <li>Works with Gmail, Outlook, any provider</li>
+        </ul>
+        <div class="ch-badge-row">
+          <span class="ch-pill em-pill">Works for bulk orders</span>
+          <span class="ch-pill em-pill">Auto-download ⚡</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="sec how-sec" id="how">
+  <div class="sec-inner">
+    <div class="r"><span class="chip">How it works</span></div>
+    <div class="how-layout">
+      <div>
+        <div class="r d1"><h2 class="sec-h">Three steps.<br>That's genuinely it.</h2></div>
+        <div class="r d2"><p class="sec-p">Whether the file comes via WhatsApp or Email, the flow is identical. Send → Auto-downloads → Print.</p></div>
+        <div class="steps" style="margin-top:36px">
+          <div class="step active r d1" onclick="setStep(this)">
+            <div class="step-num">01</div>
+            <div>
+              <div class="step-title">Customer sends on WhatsApp or Email</div>
+              <div class="step-desc">No app download. No sign-up. No confusion. They open WhatsApp or their email, send files to your shop, and that's their job done.</div>
+            </div>
+          </div>
+          <div class="step r d2" onclick="setStep(this)">
+            <div class="step-num">02</div>
+            <div>
+              <div class="step-title">Files auto-download & organise</div>
+              <div class="step-desc">This is our superpower. Files are automatically downloaded and grouped by customer the moment they arrive — from both WhatsApp and Email. Zero manual work.</div>
+            </div>
+          </div>
+          <div class="step r d3" onclick="setStep(this)">
+            <div class="step-num">03</div>
+            <div>
+              <div class="step-title">One click to print</div>
+              <div class="step-desc">Your dashboard shows every order live. Hit print on any file — it sends directly to your printer. Works with all printer brands. No drivers, no fuss.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-demo r d2">
+        <div class="phone">
+          <div class="p-notch"></div>
+          <div class="p-screen">
+            <div class="p-topbar">
+              <div class="p-av">P</div>
+              <div><div class="p-name">PrintQ Shop</div><div class="p-online">online</div></div>
+            </div>
+            <div class="p-body">
+              <div class="bbl bbl-in">Hi! Need to print some docs 🙏<div class="ts2">10:42</div></div>
+              <div class="bbl bbl-out">Sure! Send your files here ✅<div class="ts2">10:42</div></div>
+              <div class="bbl bbl-file">
+                <div class="file-thumb">PDF</div>
+                <div><div class="fn">Marksheet_2024.pdf</div><div class="fs">842 KB · 3 pages</div></div>
+                <div class="ts2" style="margin-left:auto">10:43</div>
+              </div>
+              <div class="bbl bbl-file">
+                <div class="file-thumb img">IMG</div>
+                <div><div class="fn">Aadhar_front.jpg</div><div class="fs">1.1 MB</div></div>
+                <div class="ts2" style="margin-left:auto">10:43</div>
+              </div>
+              <div class="bbl sys-msg">Files auto-downloaded ⚡</div>
+              <div class="bbl bbl-out">Got it! Auto-saved 🎉<br>Ready to print in 2 mins!<div class="ts2">10:43</div></div>
+              <div class="bbl bbl-in">Wow so fast 😊 Thanks!<div class="ts2">10:45</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="fc fc1">
+          <div class="fc-ic fc-bl-bg">⚡</div>
+          <div><div class="fc-th">Auto-downloaded</div><div class="fc-st">2 files saved instantly</div></div>
+        </div>
+        <div class="fc fc2">
+          <div class="fc-ic fc-gr-bg">🖨</div>
+          <div><div class="fc-th">1-click print</div><div class="fc-st">All printers supported</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTO DOWNLOAD SPOTLIGHT -->
+<section class="sec dl-sec" id="auto-dl">
+  <div class="sec-inner">
+    <div class="r"><span class="chip">Our biggest USP</span></div>
+    <div class="r d1"><h2 class="sec-h">Files auto-download.<br>You never click twice.</h2></div>
+    <div class="r d2"><p class="sec-p">Most tools make you download each file manually. PrintQ does it automatically — from both WhatsApp and Email — the moment they arrive.</p></div>
+    <div class="dl-layout">
+      <div class="dl-visual r">
+        <div class="dl-steps-list">
+          <div class="dl-step">
+            <div class="dl-step-ic">💬</div>
+            <div>
+              <div class="dl-step-h">Customer sends via WhatsApp or Email</div>
+              <div class="dl-step-p">PDF, image, Word doc — anything. From any device. The customer's job ends here.</div>
+            </div>
+          </div>
+          <div class="dl-step">
+            <div class="dl-step-ic">⚡</div>
+            <div>
+              <div class="dl-step-h">PrintQ auto-downloads instantly</div>
+              <div class="dl-step-p">No waiting. No manual action. The file is downloaded and saved to your dashboard automatically.</div>
+            </div>
+          </div>
+          <div class="dl-step">
+            <div class="dl-step-ic">📂</div>
+            <div>
+              <div class="dl-step-h">Organised by customer, ready to print</div>
+              <div class="dl-step-p">Files are grouped by sender — name, number, or email. Zero confusion even with 50 orders queued.</div>
+            </div>
+          </div>
+          <div class="dl-step">
+            <div class="dl-step-ic">🖨</div>
+            <div>
+              <div class="dl-step-h">One click sends to printer</div>
+              <div class="dl-step-p">Connected to all printer brands. Click print on any file and it goes directly to your printer — no drivers, no downloads.</div>
+            </div>
+          </div>
+        </div>
+        <div class="dl-highlight-box">
+          <div class="dl-hl-label">Why this matters</div>
+          <div class="dl-hl-text">Without auto-download, you waste 2–3 seconds per file. With 100 files a day, that's 5+ minutes just opening files. PrintQ eliminates that completely.</div>
+          <div class="dl-hl-sub">Works identically for WhatsApp and Email attachments.</div>
+        </div>
+      </div>
+      <div>
+        <div class="dl-right-points">
+          <div class="dlrp r d1">
+            <div class="dlrp-ic">🔌</div>
+            <div><div class="dlrp-h">Works with all printers</div><p class="dlrp-p">HP, Canon, Epson, Brother — doesn't matter. PrintQ connects to whatever printer you already have. No new hardware needed.</p></div>
+          </div>
+          <div class="dlrp r d2">
+            <div class="dlrp-ic">📧</div>
+            <div><div class="dlrp-h">Email works just like WhatsApp</div><p class="dlrp-p">Offices and colleges love sending via email. Every attachment auto-downloads and appears in your queue alongside WhatsApp files — unified view.</p></div>
+          </div>
+          <div class="dlrp r d3">
+            <div class="dlrp-ic">📥</div>
+            <div><div class="dlrp-h">Zero manual file management</div><p class="dlrp-p">No downloading one by one. No USB drives. No Bluetooth fails. Files appear in your dashboard the moment they're sent.</p></div>
+          </div>
+          <div class="dlrp r d1">
+            <div class="dlrp-ic">🏃</div>
+            <div><div class="dlrp-h">Handle 3x more orders</div><p class="dlrp-p">When every file is already downloaded and sorted, you can serve customers 3x faster with the same effort.</p></div>
+          </div>
+          <div class="dlrp r d2">
+            <div class="dlrp-ic">🔒</div>
+            <div><div class="dlrp-h">Files stay private & secure</div><p class="dlrp-p">Every file is stored securely linked to the customer. Auto-deleted after printing based on your settings.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="sec dash-sec">
+  <div class="sec-inner">
+    <div class="r"><span class="chip">Smart Dashboard</span></div>
+    <div class="r d1"><h2 class="sec-h">WhatsApp + Email.<br>One control panel.</h2></div>
+    <div class="r d2"><p class="sec-p">Every order from both channels appears live — auto-labelled with source, auto-organised by customer, ready to print in one click.</p></div>
+    <div class="dash-window r">
+      <div class="dw-bar">
+        <div class="dd dd-r"></div><div class="dd dd-y"></div><div class="dd dd-g"></div>
+        <div class="dw-label">PrintQ Dashboard — GBlock Shop, Panipat</div>
+      </div>
+      <div class="dw-body">
+        <div class="dw-side">
+          <div class="dsi on">🖨 Print Queue</div>
+          <div class="dsi">📂 All Orders</div>
+          <div class="dsi">💬 WhatsApp</div>
+          <div class="dsi">📧 Email</div>
+          <div class="dsi">👥 Customers</div>
+          <div class="dsi">📊 Analytics</div>
+        </div>
+        <div class="dw-main">
+          <div class="dw-mh">
+            <div class="dw-t2">Live Print Queue</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <div class="dw-tabs">
+                <button class="dw-tab on">All</button>
+                <button class="dw-tab off">WhatsApp</button>
+                <button class="dw-tab off">Email</button>
+              </div>
+              <div class="live-badge"><span class="lb-dot"></span> 5 pending</div>
+            </div>
+          </div>
+          <div class="order-rows">
+            <div class="or">
+              <div class="sd sd-b"></div>
+              <div class="or-av" style="background:#16a34a">R</div>
+              <div class="or-info"><div class="or-name">Rahul Sharma</div><div class="or-file">📄 Marksheet_2024.pdf — 3 pages · Auto-downloaded</div></div>
+              <span class="or-src src-wa">WhatsApp</span>
+              <div class="or-time">2m</div>
+              <button class="print-btn">🖨 Print</button>
+            </div>
+            <div class="or">
+              <div class="sd sd-b"></div>
+              <div class="or-av" style="background:#1d4ed8">A</div>
+              <div class="or-info"><div class="or-name">Anjali@gmail.com</div><div class="or-file">📄 Resume_final.docx + Aadhar.jpg — 2 files · Auto-downloaded</div></div>
+              <span class="or-src src-em">Email</span>
+              <div class="or-time">4m</div>
+              <button class="print-btn">🖨 Print</button>
+            </div>
+            <div class="or">
+              <div class="sd sd-b"></div>
+              <div class="or-av" style="background:#7c3aed">P</div>
+              <div class="or-info"><div class="or-name">Priya Singh</div><div class="or-file">🖼 Aadhar_card.jpg + form.pdf — 2 files · Auto-downloaded</div></div>
+              <span class="or-src src-wa">WhatsApp</span>
+              <div class="or-time">7m</div>
+              <button class="print-btn">🖨 Print</button>
+            </div>
+            <div class="or">
+              <div class="sd sd-y"></div>
+              <div class="or-av" style="background:#0891b2">M</div>
+              <div class="or-info"><div class="or-name">Mohit Garg</div><div class="or-file">📄 Assignment.pdf — 8 pages · Auto-downloaded</div></div>
+              <span class="or-src src-em">Email</span>
+              <div class="or-time">15m</div>
+              <button class="print-btn">🖨 Print</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="sec feat-sec" id="features">
+  <div class="sec-inner">
+    <div class="r"><span class="chip">Features</span></div>
+    <div class="r d1"><h2 class="sec-h">Everything your shop needs.</h2></div>
+    <div class="feat-grid">
+      <div class="feat-card r"><div class="feat-num">01</div><div class="feat-ic fi-bl">⚡</div><div class="feat-h">Auto file download</div><p class="feat-p">Files from WhatsApp & Email are automatically saved the moment they arrive. Never click "download" on a file again.</p></div>
+      <div class="feat-card r d1"><div class="feat-num">02</div><div class="feat-ic fi-gr">💬</div><div class="feat-h">WhatsApp + Email unified</div><p class="feat-p">Both channels in one dashboard. Switch between them or view all together — same queue, same one-click print.</p></div>
+      <div class="feat-card r d2"><div class="feat-num">03</div><div class="feat-ic fi-am">🖨</div><div class="feat-h">Single click to print</div><p class="feat-p">One button per file. Click → prints directly to your printer. Works with all brands — HP, Canon, Epson, Brother.</p></div>
+      <div class="feat-card r d1"><div class="feat-num">04</div><div class="feat-ic fi-pu">👥</div><div class="feat-h">Customer-wise organisation</div><p class="feat-p">Every order auto-tagged by sender. View all files per customer at a glance — zero mix-ups, ever.</p></div>
+      <div class="feat-card r d2"><div class="feat-num">05</div><div class="feat-ic fi-pk">🔌</div><div class="feat-h">Works with all printers</div><p class="feat-p">No new hardware. No driver installation. PrintQ connects to your existing printer over your local network.</p></div>
+      <div class="feat-card r d3"><div class="feat-num">06</div><div class="feat-ic fi-te">📊</div><div class="feat-h">Real-time analytics</div><p class="feat-p">Track daily volume, peak hours, top customers, channel split. Make smarter decisions every day.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sec price-sec" id="pricing">
+  <div class="sec-inner">
+    <div class="r"><span class="chip">Pricing</span></div>
+    <div class="r d1"><h2 class="sec-h">Less than a cup of chai.<br>Every single day.</h2></div>
+    <div class="price-wrap">
+      <div class="price-card r">
+        <div class="price-tag-label">Complete Shop Plan</div>
+        <div class="price-per-day">
+          <div class="price-num">₹25</div>
+          <div class="price-slash">/ day</div>
+        </div>
+        <div class="price-sub">₹750/month · Everything included · Cancel anytime</div>
+        <ul class="price-list">
+          <li>WhatsApp integration (unlimited orders)</li>
+          <li>Email integration (unlimited orders)</li>
+          <li>Auto file download from both channels</li>
+          <li>One-click printing to any printer</li>
+          <li>Unified smart dashboard</li>
+          <li>Customer-wise organisation</li>
+          <li>PDF, JPG, PNG, DOCX support</li>
+          <li>Order history & analytics</li>
+          <li>Free setup & onboarding</li>
+          <li>Dedicated support</li>
+        </ul>
+        <button class="price-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get started — Free setup included</button>
+      </div>
+      <div class="why-list r d1">
+        <div class="why-item">
+          <div class="why-ic">⚡</div>
+          <div><div class="why-h">Auto-download saves 5+ min daily</div><p class="why-p">At 100 files/day, manually downloading each wastes hours a week. Auto-download eliminates this completely.</p></div>
+        </div>
+        <div class="why-item">
+          <div class="why-ic">📧</div>
+          <div><div class="why-h">Email opens new customer segments</div><p class="why-p">Offices, colleges, and corporate clients prefer email. Now you can serve them without any extra effort.</p></div>
+        </div>
+        <div class="why-item">
+          <div class="why-ic">🖨</div>
+          <div><div class="why-h">Works with your existing printer</div><p class="why-p">No new hardware investment. PrintQ connects to whatever printer is already in your shop.</p></div>
+        </div>
+        <div class="why-item">
+          <div class="why-ic">🎁</div>
+          <div><div class="why-h">Free setup, always</div><p class="why-p">We configure WhatsApp, Email, and dashboard for you — completely free. You only pay the daily plan.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="sec testi-sec">
+  <div class="sec-inner">
+    <div class="r"><span class="chip">What shop owners say</span></div>
+    <div class="r d1"><h2 class="sec-h">Early users are obsessed.</h2></div>
+    <div class="testi-grid">
+      <div class="tc r">
+        <div class="tc-stars">★★★★★</div>
+        <p class="tc-text">"Before PrintQ, customers used to Bluetooth files and half the time it wouldn't work. Now they just WhatsApp me. My shop feels like it's from the future."</p>
+        <div class="tc-auth"><div class="tc-av" style="background:#16a34a">S</div><div><div class="tc-n">Suresh Kumar</div><div class="tc-s">Sai Stationers, Chandigarh</div></div></div>
+      </div>
+      <div class="tc r d1">
+        <div class="tc-stars">★★★★★</div>
+        <p class="tc-text">"The auto-download feature alone is worth it. Files just appear in my dashboard — I don't have to open a single one manually. Huge time saver."</p>
+        <div class="tc-auth"><div class="tc-av" style="background:#1d4ed8">R</div><div><div class="tc-n">Rajesh Goel</div><div class="tc-s">GBlock Stationery, Ludhiana</div></div></div>
+      </div>
+      <div class="tc r d2">
+        <div class="tc-stars">★★★★★</div>
+        <p class="tc-text">"College students email me assignments and office people WhatsApp docs — everything comes to one place now. I handle 3x more orders with the same effort."</p>
+        <div class="tc-auth"><div class="tc-av" style="background:#ea580c">M</div><div><div class="tc-n">Meena Arora</div><div class="tc-s">Campus Prints, Patiala</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec contact-sec" id="contact">
+  <div class="sec-inner">
+    <div class="r"><span class="chip">Get in touch</span></div>
+    <div class="r d1"><h2 class="sec-h">Ready to upgrade<br>your print shop?</h2></div>
+    <div class="contact-layout">
+      <div class="contact-form-wrap r">
+        <div class="cf-title">Book a free demo →</div>
+        <div class="fg"><label>Your Name</label><input type="text" id="c-name" placeholder="Suresh Kumar"/></div>
+        <div class="fg"><label>Email Address</label><input type="email" id="c-email" placeholder="suresh@shop.com"/></div>
+        <div class="fg"><label>WhatsApp Number</label><input type="tel" id="c-phone" placeholder="+91 98765 43210"/></div>
+        <div class="fg"><label>Shop Name</label><input type="text" id="c-shop" placeholder="GBlock Stationery"/></div>
+        <button class="submit-btn" id="c-btn" onclick="doSubmit()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          Send — We'll contact you in 24h
+        </button>
+        <div class="success-box" id="c-ok">🎉 Received! Our team will reach out within 24 hours.</div>
+      </div>
+      <div class="contact-right r d1">
+        <div class="big-claim">Free setup.<br>Both channels.<br><span>Live in 24 hours.</span></div>
+        <div class="contact-items">
+          <div class="ci"><div class="ci-ic">📧</div><div><div class="ci-l">Email</div><div class="ci-v"><a href="mailto:executives@humblesolutions.in">executives@humblesolutions.in</a></div></div></div>
+          <div class="ci"><div class="ci-ic">🌐</div><div><div class="ci-l">Website</div><div class="ci-v"><a href="https://humblesolutions.in" target="_blank">humblesolutions.in</a></div></div></div>
+          <div class="ci"><div class="ci-ic">📍</div><div><div class="ci-l">Serving</div><div class="ci-v">Punjab & Haryana, India</div></div></div>
+          <div class="ci"><div class="ci-ic">⚡</div><div><div class="ci-l">Response time</div><div class="ci-v">Within 24 hours</div></div></div>
+        </div>
+        <div class="trust-bar">
+          <div class="tb">✓ <b>Free</b> setup</div>
+          <div class="tb">✓ WhatsApp + Email</div>
+          <div class="tb">✓ ₹25/day only</div>
+          <div class="tb">✓ Cancel anytime</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-inner">
+    <div>
+      <div class="foot-logo-row">
+        <!-- PrintQ logo -->
+        <div class="foot-logo-img">
+          <svg viewBox="0 0 24 24"><path d="M5 4h14a1 1 0 0 1 1 1v5H4V5a1 1 0 0 1 1-1zM4 12h16v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7zm6 2v2h4v-2h-4z"/></svg>
+        </div>
+        <div class="foot-brand-name">PrintQ</div>
+      </div>
+      <p class="foot-sub">Turning every stationery shop into a smart, WhatsApp + Email powered print hub.</p>
+      <div class="foot-powered">
+        <!-- Humble Solutions logo placeholder -->
+        <div class="fp-logo">
+          <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.6)" width="18" height="18"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div>
+          <div class="fp-text">Powered by</div>
+          <div class="fp-name">Humble Solutions</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot-col">
+      <div class="foot-col-h">Product</div>
+      <a href="#channels">WhatsApp + Email</a>
+      <a href="#auto-dl">Auto Download</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing ₹25/day</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-col-h">Company</div>
+      <a href="https://humblesolutions.in" target="_blank">Humble Solutions</a>
+      <a href="mailto:executives@humblesolutions.in">executives@humblesolutions.in</a>
+      <a href="https://humblesolutions.in" target="_blank">humblesolutions.in</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-col-h">Contact</div>
+      <a href="mailto:executives@humblesolutions.in">Email us</a>
+      <a href="#contact">Book a demo</a>
+      <a href="#contact">Get early access</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div class="foot-copy">© 2026 PrintQ by Humble Solutions · Punjab, India</div>
+    <div class="foot-legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+    </div>
+  </div>
+</footer>
+
+<!-- EMAIL SERVICE (Web3Forms — free, no backend needed) -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<!-- FIREBASE + EMAIL -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const cfg={
+  apiKey:"AIzaSyA-saNECjjSPdcVdeYnBGSvv5ifPm1sP-E",
+  authDomain:"printq-leads.firebaseapp.com",
+  projectId:"printq-leads",
+  storageBucket:"printq-leads.firebasestorage.app",
+  messagingSenderId:"679837552399",
+  appId:"1:679837552399:web:942606f3b7bba590f2f87a"
+};
+
+let db;
+try{
+  const app=initializeApp(cfg);
+  db=getFirestore(app);
+}catch(e){console.warn('Firebase not configured yet:',e.message)}
+
+/* ── Send email notification via Web3Forms (free, no signup needed for basic) ── */
+async function sendEmailNotification(name, email, phone, shop) {
+  const WEB3FORMS_KEY = 'a69bc983-6d28-45e4-b915-bf9d2672d05e';
+
+  const formData = new FormData();
+  formData.append('access_key', WEB3FORMS_KEY);
+  formData.append('subject', '🖨 New PrintQ Demo Request!');
+  formData.append('from_name', 'PrintQ Website');
+  formData.append('to', 'supremedrip1301@gmail.com');
+
+  // Build a nicely formatted email body
+  formData.append('message',
+    `📋 New Demo Booking Request\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `👤 Name: ${name}\n` +
+    `📧 Email: ${email}\n` +
+    `📱 WhatsApp: ${phone}\n` +
+    `🏪 Shop Name: ${shop || 'Not provided'}\n\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+    `📅 Submitted: ${new Date().toLocaleString('en-IN', { dateStyle: 'full', timeStyle: 'short' })}\n` +
+    `🌐 Source: PrintQ Landing Page\n\n` +
+    `⚡ Please contact this lead within 24 hours.`
+  );
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if (data.success) {
+      console.log('✅ Email notification sent successfully');
+    } else {
+      console.warn('⚠️ Email send returned non-success:', data);
+    }
+  } catch (err) {
+    console.warn('⚠️ Email notification failed (form still saved to Firebase):', err);
+  }
+}
+
+window.doSubmit=async function(){
+  const name=document.getElementById('c-name').value.trim();
+  const email=document.getElementById('c-email').value.trim();
+  const phone=document.getElementById('c-phone').value.trim();
+  const shop=document.getElementById('c-shop').value.trim();
+  const btn=document.getElementById('c-btn');
+  const ok=document.getElementById('c-ok');
+  if(!name||!email||!phone){alert('Please fill your name, email and WhatsApp number.');return}
+  btn.disabled=true;
+  btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" opacity=".3"/><path d="M12 2a10 10 0 0 1 10 10h-2a8 8 0 0 0-8-8V2z"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/></path></svg> Sending…';
+  try{
+    // 1. Save to Firebase
+    if(!db)throw new Error('Firebase not configured');
+    await addDoc(collection(db,"printq_leads"),{name,email,phone,shop,source:'landing_page',timestamp:serverTimestamp()});
+
+    // 2. Send email notification (non-blocking — form success doesn't depend on email)
+    sendEmailNotification(name, email, phone, shop);
+
+    ok.style.display='block';
+    btn.innerHTML='✓ Submitted!';
+    ['c-name','c-email','c-phone','c-shop'].forEach(id=>document.getElementById(id).value='');
+  }catch(e){
+    console.error(e);
+    alert('Could not submit. Please email us directly:\nexecutives@humblesolutions.in');
+    btn.disabled=false;
+    btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Send — We\'ll contact you in 24h';
+  }
+};
+</script>
+
+<script>
+// Custom cursor (desktop)
+const cur=document.getElementById('cursor');
+if(cur&&window.matchMedia('(pointer:fine)').matches){
+  document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px'});
+  document.querySelectorAll('button,a,.feat-card,.tc,.step,.ch-card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>cur.classList.add('big'));
+    el.addEventListener('mouseleave',()=>cur.classList.remove('big'));
+  });
+}
+
+// Nav solid
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('solid',window.scrollY>30);
+});
+
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')});
+},{threshold:0.08});
+document.querySelectorAll('.r').forEach(el=>obs.observe(el));
+
+// Step accordion
+window.setStep=function(el){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+};
+
+// Hamburger
+window.toggleMenu=function(){
+  document.getElementById('mmenu').classList.toggle('open');
+};
+window.closeMenu=function(){
+  document.getElementById('mmenu').classList.remove('open');
+};
+
+// Dashboard tab clicks
+document.querySelectorAll('.dw-tab').forEach(t=>{
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.dw-tab').forEach(x=>{x.classList.remove('on');x.classList.add('off')});
+    this.classList.remove('off');this.classList.add('on');
+  });
+});
+</script>
+</body>
+</html>
